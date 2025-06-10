@@ -25,7 +25,7 @@
     <div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl p-6 shadow-md">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-bold">Daily Check-in</h2>
-        <span class="text-sm bg-white text-purple-700 px-3 py-1 rounded-full font-semibold">🔥 12 day streak</span>
+        <span id="streakDisplay" class="text-sm bg-white text-purple-700 px-3 py-1 rounded-full font-semibold"></span>
       </div>
       <p class="mb-2">How are you feeling today?</p>
       <div class="flex flex-wrap gap-3 mb-4">
@@ -83,6 +83,13 @@
 </main>
 
 <script>
+  // Streak logic
+  let streakCount = parseInt(localStorage.getItem('streak') || '12');
+  function updateStreakDisplay() {
+    document.getElementById("streakDisplay").innerHTML = `🔥 ${streakCount} day streak`;
+  }
+  updateStreakDisplay();
+
   document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
@@ -91,8 +98,8 @@
   let selectedMood = null;
   moodButtons.forEach(button => {
     button.addEventListener('click', () => {
-      moodButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-white', 'bg-purple-100'));
-      button.classList.add('ring-2', 'ring-white', 'bg-purple-100');
+      moodButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-white', 'bg-purple-100', 'scale-110'));
+      button.classList.add('ring-2', 'ring-white', 'bg-purple-100', 'scale-110');
       selectedMood = button.getAttribute('data-mood');
     });
   });
@@ -101,7 +108,33 @@
     const reflection = document.getElementById('reflectionText').value.trim();
     if (!selectedMood) return alert('Please select your mood.');
     if (!reflection) return alert('Please write a reflection.');
-    alert(`Check-in saved!\nMood: ${selectedMood}\nReflection: ${reflection}`);
+    const data = {
+      employee: 'Sarah',
+      mood: selectedMood,
+      reflection,
+      date: new Date().toISOString()
+    };
+    fetch('https://flicker-fresh-beechnut.glitch.me/api/checkins', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(res => {
+      if (res.ok) {
+        streakCount++;
+        localStorage.setItem('streak', streakCount);
+        updateStreakDisplay();
+        alert('Check-in submitted!');
+        document.getElementById('reflectionText').value = '';
+        selectedMood = null;
+      } else {
+        throw new Error('Failed to save check-in');
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Server error.');
+    });
   });
 
   document.getElementById("saveEntry").addEventListener("click", () => {
