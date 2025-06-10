@@ -141,41 +141,12 @@
         <div class="card-value">2</div>
       </div>
     </div>
+
     <div class="section-title">Edit Satisfaction Tracker Questions</div>
-<form id="categoryForm">
-  <textarea id="categoryInput" rows="6" class="w-full p-2 rounded border border-gray-300" placeholder="Enter one question per line"></textarea>
-  <button type="submit" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save Questions</button>
-</form>
-
-<script>
-  // Load current categories
-  fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("categoryInput").value = data.join("\n");
-    });
-
-  // Submit updated categories
-  document.getElementById("categoryForm").addEventListener("submit", e => {
-    e.preventDefault();
-    const inputText = document.getElementById("categoryInput").value.trim();
-    const categoryList = inputText.split("\n").map(c => c.trim()).filter(c => c !== "");
-
-    fetch("https://flicker-fresh-beechnut.glitch.me/api/categories", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(categoryList)
-    })
-    .then(res => res.json())
-    .then(data => {
-      alert("Questions updated successfully.");
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Error updating categories.");
-    });
-  });
-</script>
+    <form id="categoryForm">
+      <textarea id="categoryInput" rows="6" class="w-full p-2 rounded border border-gray-300" placeholder="Enter one question per line"></textarea>
+      <button type="submit" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Save Questions</button>
+    </form>
 
     <div class="section-title">Recent Support Requests</div>
     <ul>
@@ -184,51 +155,17 @@
       <li>Employee #12 – Reported high stress level</li>
     </ul>
 
-    <!-- New Section: Shared Journal Entries -->
     <div class="section-title">Shared Journal Entries</div>
     <ul id="journalList">
       <li>Loading entries...</li>
     </ul>
+
+    <div class="section-title">Satisfaction Tracker Submissions</div>
+    <ul id="ratingsList"><li>Loading...</li></ul>
   </div>
 
-  <div class="section-title">Satisfaction Tracker Submissions</div>
-<ul id="ratingsList"><li>Loading...</li></ul>
-
-<script>
-  fetch("https://flicker-fresh-beechnut.glitch.me/api/ratings")
-    .then(res => res.json())
-    .then(data => {
-      const ratingsList = document.getElementById("ratingsList");
-      ratingsList.innerHTML = "";
-
-      if (data.length === 0) {
-        ratingsList.innerHTML = "<li>No ratings submitted yet.</li>";
-        return;
-      }
-
-      data.forEach(entry => {
-        const li = document.createElement("li");
-        const date = new Date(entry.date).toLocaleString();
-        const ratings = Object.entries(entry.responses)
-          .map(([k, v]) => `<li><strong>${k}</strong>: ${v}/10</li>`).join("");
-        li.innerHTML = `
-          <div style="margin-bottom: 1rem;">
-            <strong>${entry.employee}</strong> on <em>${date}</em><br/>
-            <ul>${ratings}</ul>
-            <em>Context:</em> ${entry.context || "None"}
-          </div>`;
-        ratingsList.appendChild(li);
-      });
-    })
-    .catch(err => {
-      console.error(err);
-      document.getElementById("ratingsList").innerHTML = "<li>Error loading ratings.</li>";
-    });
-</script>
-  
-
-
   <script>
+    // Fetch and show journal entries
     fetch("https://flicker-fresh-beechnut.glitch.me/api/journal")
       .then(res => res.json())
       .then(data => {
@@ -248,6 +185,64 @@
         console.error("Error loading entries:", err);
         document.getElementById("journalList").innerHTML = "<li>Error loading journal entries.</li>";
       });
+
+    // Fetch and show ratings
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/ratings")
+      .then(res => res.json())
+      .then(data => {
+        const ratingsList = document.getElementById("ratingsList");
+        ratingsList.innerHTML = "";
+
+        if (data.length === 0) {
+          ratingsList.innerHTML = "<li>No ratings submitted yet.</li>";
+          return;
+        }
+
+        data.forEach(entry => {
+          const li = document.createElement("li");
+          const date = new Date(entry.date).toLocaleString();
+          const ratings = Object.entries(entry.responses)
+            .map(([k, v]) => `<li><strong>${k}</strong>: ${v}/10</li>`).join("");
+          li.innerHTML = `
+            <div style="margin-bottom: 1rem;">
+              <strong>${entry.employee}</strong> on <em>${date}</em><br/>
+              <ul>${ratings}</ul>
+              <em>Context:</em> ${entry.context || "None"}
+            </div>`;
+          ratingsList.appendChild(li);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("ratingsList").innerHTML = "<li>Error loading ratings.</li>";
+      });
+
+    // Load and submit satisfaction tracker questions
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("categoryInput").value = data.join("\n");
+      });
+
+    document.getElementById("categoryForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const inputText = document.getElementById("categoryInput").value.trim();
+      const categoryList = inputText.split("\n").map(c => c.trim()).filter(c => c !== "");
+
+      fetch("https://flicker-fresh-beechnut.glitch.me/api/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(categoryList)
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert("Questions updated successfully.");
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error updating categories.");
+      });
+    });
   </script>
 </body>
 </html>
