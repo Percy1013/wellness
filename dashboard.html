@@ -241,78 +241,83 @@
   });
 
   // Chart.js for Satisfaction Trends
-const ctx = document.getElementById('satisfactionChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [...Array(12)].map((_, i) => `Week ${i + 1}`),
-      datasets: [
-        {
-          label: 'Work-life Balance',
-          data: [6, 7, 7, 8, 7, 8, 8, 7, 7, 8, 8, 9],
-          borderColor: '#6366f1',
-          backgroundColor: 'transparent',
-          tension: 0.4,
-          pointRadius: 4,
-          pointBackgroundColor: '#6366f1'
-        },
-        {
-          label: 'Team Collaboration',
-          data: [5, 6, 6, 6, 7, 7, 8, 7, 7, 8, 7, 8],
-          borderColor: '#10b981',
-          backgroundColor: 'transparent',
-          tension: 0.4,
-          pointRadius: 4,
-          pointBackgroundColor: '#10b981'
-        },
-        {
-          label: 'Management Support',
-          data: [4, 5, 6, 6, 6, 7, 7, 6, 6, 7, 6, 7],
-          borderColor: '#f59e0b',
-          backgroundColor: 'transparent',
-          tension: 0.4,
-          pointRadius: 4,
-          pointBackgroundColor: '#f59e0b'
-        },
-        {
-          label: 'Career Growth',
-          data: [5, 5, 6, 6, 6, 7, 7, 6, 6, 7, 7, 8],
-          borderColor: '#ef4444',
-          backgroundColor: 'transparent',
-          tension: 0.4,
-          pointRadius: 4,
-          pointBackgroundColor: '#ef4444'
-        },
-        {
-          label: 'Workload Manageability',
-          data: [3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7],
-          borderColor: '#3b82f6',
-          backgroundColor: 'transparent',
-          tension: 0.4,
-          pointRadius: 4,
-          pointBackgroundColor: '#3b82f6'
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { usePointStyle: true, boxWidth: 10 }
-        }
+<script>
+  window.onload = function () {
+    // Chart.js for Satisfaction Trends
+    const ctx = document.getElementById('satisfactionChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [...Array(12)].map((_, i) => `Week ${i + 1}`),
+        datasets: [
+          {
+            label: 'Work-life Balance',
+            data: [6, 7, 7, 8, 7, 8, 8, 7, 7, 8, 8, 9],
+            borderColor: '#6366f1',
+            backgroundColor: 'transparent',
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#6366f1'
+          },
+          {
+            label: 'Team Collaboration',
+            data: [5, 6, 6, 6, 7, 7, 8, 7, 7, 8, 7, 8],
+            borderColor: '#10b981',
+            backgroundColor: 'transparent',
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#10b981'
+          },
+          {
+            label: 'Management Support',
+            data: [4, 5, 6, 6, 6, 7, 7, 6, 6, 7, 6, 7],
+            borderColor: '#f59e0b',
+            backgroundColor: 'transparent',
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#f59e0b'
+          },
+          {
+            label: 'Career Growth',
+            data: [5, 5, 6, 6, 6, 7, 7, 6, 6, 7, 7, 8],
+            borderColor: '#ef4444',
+            backgroundColor: 'transparent',
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#ef4444'
+          },
+          {
+            label: 'Workload Manageability',
+            data: [3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7],
+            borderColor: '#3b82f6',
+            backgroundColor: 'transparent',
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#3b82f6'
+          }
+        ]
       },
-      scales: {
-        y: {
-          beginAtZero: true,
-          max: 10,
-          ticks: { stepSize: 1 }
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { usePointStyle: true, boxWidth: 10 }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 10,
+            ticks: { stepSize: 1 }
+          }
         }
       }
-    }
-  });
+    });
+  };
 </script>
+
 
 </body>
 </html>
