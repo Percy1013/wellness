@@ -209,6 +209,87 @@
       document.getElementById(`${category}-score`).textContent = `${value}/10`;
     }
   });
+  <button id="submitRatings"
+  class="mt-4 w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700">
+  Submit Ratings
+</button>
+  <script>
+  // Load categories dynamically from backend
+  fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
+    .then(res => res.json())
+    .then(trackerCategories => {
+      const trackerContainer = document.getElementById('tracker-categories');
+      trackerContainer.innerHTML = "";
+
+      trackerCategories.forEach(category => {
+        const id = category.toLowerCase().replace(/\s+/g, '-');
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+          <label class="font-medium">${category}</label>
+          <div class="flex items-center mt-1 gap-3">
+            <div class="flex gap-1 rating-buttons" id="${id}-buttons">
+              ${[...Array(10)].map((_, i) => `
+                <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
+                  data-category="${id}" data-value="${i + 1}">${i + 1}</button>`).join('')}
+            </div>
+            <span class="text-sm text-gray-600" id="${id}-score"></span>
+          </div>
+        `;
+        trackerContainer.appendChild(wrapper);
+      });
+
+      // Attach listeners for dynamically created buttons
+      document.querySelectorAll('button[data-category]').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const category = e.target.getAttribute('data-category');
+          const value = e.target.getAttribute('data-value');
+          document.querySelectorAll(`#${category}-buttons button`).forEach(btn => {
+            btn.classList.remove('bg-blue-500', 'text-white');
+            btn.classList.add('bg-gray-100');
+          });
+          e.target.classList.remove('bg-gray-100');
+          e.target.classList.add('bg-blue-500', 'text-white');
+          document.getElementById(`${category}-score`).textContent = `${value}/10`;
+        });
+      });
+    });
+
+  // Submit ratings to backend
+  document.getElementById("submitRatings").addEventListener("click", () => {
+    const context = document.querySelector('input[placeholder="Add Context"]').value.trim();
+    const responses = {};
+
+    document.querySelectorAll('button[data-category].bg-blue-500').forEach(btn => {
+      const category = btn.getAttribute('data-category');
+      const value = parseInt(btn.getAttribute('data-value'));
+      responses[category] = value;
+    });
+
+    if (Object.keys(responses).length === 0) {
+      alert("Please rate at least one category.");
+      return;
+    }
+
+    const data = {
+      employee: "Sarah",
+      date: new Date().toISOString(),
+      responses,
+      context
+    };
+
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/ratings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(() => alert("Ratings submitted!"))
+    .catch(err => {
+      console.error("Rating submit error:", err);
+      alert("Error submitting rating.");
+    });
+  });
+</script>
 
   // Fix: Ensure Chart renders after canvas is loaded
   window.onload = function () {
