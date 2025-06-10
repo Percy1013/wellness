@@ -163,6 +163,12 @@
     <div class="section-title">Satisfaction Tracker Submissions</div>
     <ul id="ratingsList"><li>Loading...</li></ul>
   </div>
+  <div class="mt-10">
+      <h3 class="text-xl font-bold mb-2">Daily Check-ins</h3>
+      <ul id="checkinList" class="bg-white p-4 rounded shadow list-inside list-disc">
+        <li>Loading...</li>
+      </ul>
+    </div>
 
   <script>
     // Fetch and show journal entries
@@ -215,6 +221,26 @@
       .catch(err => {
         console.error(err);
         document.getElementById("ratingsList").innerHTML = "<li>Error loading ratings.</li>";
+      });
+
+     fetch("https://flicker-fresh-beechnut.glitch.me/api/checkins")
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("checkinList");
+        list.innerHTML = "";
+        if (data.length === 0) {
+          list.innerHTML = "<li>No check-ins yet.</li>";
+          return;
+        }
+        data.forEach(entry => {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${entry.employee}</strong> (${new Date(entry.date).toLocaleString()}): Mood: ${entry.mood}<br>Reflection: ${entry.reflection}`;
+          list.appendChild(li);
+        });
+      })
+      .catch(err => {
+        console.error("Error loading check-ins:", err);
+        document.getElementById("checkinList").innerHTML = "<li>Error loading check-ins.</li>";
       });
 
     // Load and submit satisfaction tracker questions
