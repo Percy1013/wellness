@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Well-being Survey</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .rating {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .rating input[type="radio"] {
+            margin-right: 5px;
+        }
+        .btn {
+            background-color: #4285f4;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #3367d6;
+        }
+        .back-link {
+            color: #4285f4;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1>Weekly Well-being Survey</h1>
+        
+        <form id="surveyForm">
+            <div class="question">
+                <label>1. How is your pre-training?</label>
+                <div class="rating">
+                    <label><input type="radio" name="mood" value="1"> 1 - Very Poor</label>
+                    <label><input type="radio" name="mood" value="2"> 2 - Poor</label>
+                    <label><input type="radio" name="mood" value="3"> 3 - Neutral</label>
+                    <label><input type="radio" name="mood" value="4"> 4 - Good</label>
+                    <label><input type="radio" name="mood" value="5"> 5 - Excellent</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <label>2. Do you find it easy to adapt to your workspace?</label>
+                <div class="rating">
+                    <label><input type="radio" name="stress" value="1"> 1 - Very Low</label>
+                    <label><input type="radio" name="stress" value="2"> 2 - Low</label>
+                    <label><input type="radio" name="stress" value="3"> 3 - Moderate</label>
+                    <label><input type="radio" name="stress" value="4"> 4 - High</label>
+                    <label><input type="radio" name="stress" value="5"> 5 - Very High</label>
+                </div>
+            </div>
+
+            <div class="question">
+                <label>3. Are your coworkers friendly?</label>
+                <div class="rating">
+                    <label><input type="radio" name="space" value="1"> 1 - Very Low</label>
+                    <label><input type="radio" name="space" value="2"> 2 - Low</label>
+                    <label><input type="radio" name="space" value="3"> 3 - Moderate</label>
+                    <label><input type="radio" name="space" value="4"> 4 - High</label>
+                    <label><input type="radio" name="space" value="5"> 5 - Very High</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Submit Survey</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('surveyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const mood = document.querySelector('input[name="mood"]:checked')?.value;
+            const stress = document.querySelector('input[name="stress"]:checked')?.value;
+            const space = document.querySelector('input[name="space"]:checked')?.value;
+            
+            if (!mood || !stress) {
+                alert('Please answer both questions before submitting.');
+                return;
+            }
+
+            // Store survey data with timestamp
+            const surveyData = {
+                mood: parseInt(mood),
+                stress: parseInt(stress),
+                date: new Date().toISOString(),
+                week: getWeekNumber(new Date())
+            };
+
+            // Get existing survey data or create new array
+            let allSurveys = JSON.parse(localStorage.getItem('surveyData')) || [];
+            allSurveys.push(surveyData);
+            localStorage.setItem('surveyData', JSON.stringify(allSurveys));
+
+            alert('Survey submitted successfully!');
+            window.location.href = 'dashboard.html';
+        });
+
+        function getWeekNumber(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+        }
+    </script>
+</body>
+</html>

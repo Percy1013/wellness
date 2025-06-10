@@ -1,0 +1,28 @@
+<!-- question2.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Question 2</title>
+</head>
+<body>
+  <h2>Question 2</h2>
+  <form id="q2form">
+    <label for="answer2">Your answer:</label>
+    <input type="text" id="answer2" name="answer2" required>
+    <button type="submit">Submit & Go to Next Page</button>
+  </form>
+
+  <script>
+    document.getElementById('q2form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Get the answer
+      const answer = document.getElementById('answer2').value;
+      // Store it in localStorage
+      localStorage.setItem('question2', answer);
+      // Redirect to the next page
+      window.location.href = 'display.html';
+    });
+  </script>
+</body>
+</html>

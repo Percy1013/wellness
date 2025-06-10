@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f8fafc;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+    .header {
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 48px 16px 0;
+      border-bottom: 2px solid #ececec;
+      box-shadow: 0 4px 12px rgba(30,41,59,0.07);
+    }
+    .header-title {
+      color: #1662e8;
+      font-size: 1.15rem;
+      font-weight: 700;
+      text-decoration: none;
+      margin-left: 110px;
+    }
+    .logout-btn {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      transition: background 0.2s;
+    }
+    .logout-btn:hover {
+      background: #dc2626;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      padding: 32px 24px 24px 24px;
+    }
+    h2 {
+      margin-top: 0;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin: 32px 0;
+    }
+    .card {
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 28px 20px;
+      box-shadow: 0 1px 4px rgba(30,41,59,0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .card-title {
+      font-size: 1.1rem;
+      color: #64748b;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+    .card-value {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0ea5e9;
+    }
+    .section-title {
+      margin-top: 36px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+    ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 10px;
+      color: #475569;
+    }
+    @media (max-width: 700px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 16px 6px;
+      }
+      .header {
+        padding: 12px;
+      }
+      .header-title {
+        margin-left: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="header-title">WellBeing Tracker</span>
+    <button class="logout-btn" onclick="window.location.href='index.html'">Logout</button>
+  </div>
+
+  <div class="container">
+    <h2>Welcome, Admin</h2>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <div class="card-title">Total Employees</div>
+        <div class="card-value">3</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Pending Surveys</div>
+        <div class="card-value">5</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Support Requests</div>
+        <div class="card-value">1</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Alerts</div>
+        <div class="card-value">2</div>
+      </div>
+    </div>
+
+    <div class="section-title">Recent Support Requests</div>
+    <ul>
+      <li>Employee #45 – Request for counseling session</li>
+      <li>Employee #78 – Issue with survey access</li>
+      <li>Employee #12 – Reported high stress level</li>
+    </ul>
+
+    <!-- New Section: Shared Journal Entries -->
+    <div class="section-title">Shared Journal Entries</div>
+    <ul id="journalList">
+      <li>Loading entries...</li>
+    </ul>
+  </div>
+
+  <script>
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/journal")
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("journalList");
+        list.innerHTML = "";
+        if (data.length === 0) {
+          list.innerHTML = "<li>No journal entries shared yet.</li>";
+          return;
+        }
+        data.forEach(entry => {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${entry.employee}</strong> (${new Date(entry.date).toLocaleString()}):<br>${entry.entry}`;
+          list.appendChild(li);
+        });
+      })
+      .catch(err => {
+        console.error("Error loading entries:", err);
+        document.getElementById("journalList").innerHTML = "<li>Error loading journal entries.</li>";
+      });
+  </script>
+</body>
+</html>

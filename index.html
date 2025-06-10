@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WellBeing Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Navbar -->
+  <header class="bg-white shadow-md">
+    <div class="container mx-auto flex items-center justify-between p-4">
+      <h1 class="text-xl font-bold text-blue-600">WellBeing Tracker</h1>
+      <nav>
+        <a href="#features" class="mx-4 hover:text-blue-500">Features</a>
+        <a href="#contact" class="hover:text-blue-500">Contact</a>
+        <a href="#login" class="ml-4 text-blue-600 font-semibold">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="bg-blue-600 text-white py-20">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="text-4xl font-bold mb-4">Empower Employee Well-being</h2>
+      <p class="text-xl mb-6">Track, support, and take action — all in one place.</p>
+      <a href="#features" class="bg-white text-blue-600 font-semibold px-6 py-3 rounded-full hover:bg-gray-200">Explore Features</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 bg-gray-100">
+    <div class="container mx-auto px-4">
+      <h3 class="text-3xl font-bold text-center mb-12">Key Features</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+          <h4 class="text-xl font-semibold mb-2">Weekly Surveys</h4>
+          <p>Employees complete short mental health check-ins weekly.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+          <h4 class="text-xl font-semibold mb-2">Private Journaling</h4>
+          <p>Secure journal entries help track mood and stress levels over time.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+          <h4 class="text-xl font-semibold mb-2">Auto-Scheduled HR Meetings</h4>
+          <p>AI detects issues and automatically sets HR follow-up meetings.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+          <h4 class="text-xl font-semibold mb-2">New Hire Support</h4>
+          <p>Monitor new employees' settlement through early engagement.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+          <h4 class="text-xl font-semibold mb-2">Analytics Dashboard</h4>
+          <p>Visual trends, risk levels, and team morale insights for HR.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+          <h4 class="text-xl font-semibold mb-2">Privacy & Security</h4>
+          <p>End-to-end encryption and role-based access control.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login Section -->
+  <section id="login" class="bg-white py-16">
+    <div class="container mx-auto px-4 max-w-md">
+      <h3 class="text-2xl font-bold mb-6 text-center">Login to Your Dashboard</h3>
+      <form onsubmit="return login(event)" class="bg-gray-50 p-6 rounded-lg shadow-md">
+        <label class="block mb-2 text-sm font-medium">Email</label>
+        <input type="email" id="email" class="w-full p-3 mb-4 border rounded" required>
+
+        <label class="block mb-2 text-sm font-medium">Password</label>
+        <input type="password" id="password" class="w-full p-3 mb-4 border rounded" required>
+
+        <p id="error" class="text-red-500 text-sm mb-4 hidden">Invalid credentials. Please try again.</p>
+
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700">Login</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="bg-gray-100 py-16">
+    <div class="container mx-auto px-4 text-center">
+      <h3 class="text-2xl font-bold mb-6">Get in Touch</h3>
+      <p class="mb-6">Want a demo or more info? Reach out to our team.</p>
+      <a href="mailto:contact@wellbeingtracker.com" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700">Email Us</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white text-center py-6">
+    <p>&copy; 2025 WellBeing Tracker. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function login(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const error = document.getElementById('error');
+
+      if (email === 'employees@wellness.com' && password === 'Password') {
+        window.location.href = 'dashboard.html';
+         } else if (email === 'employees1@wellness.com' && password === 'Password') {
+        window.location.href = 'dashboard1.html'
+         } else if (email === 'employees2@wellness.com' && password === 'Password') {
+        window.location.href = 'dashboard2.html'
+      } else if (email === 'admin@wellness.com' && password === 'Password') {
+        window.location.href = 'admin.html';
+      } else {
+        error.classList.remove('hidden');
+      }
+    }
+  </script>
+
+</body>
+</html>

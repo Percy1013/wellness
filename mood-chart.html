@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Chart Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 20px 0;
+        }
+        .analysis {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .back-link {
+            color: #4285f4;
+            text-decoration: none;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .metric {
+            display: inline-block;
+            background: #e3f2fd;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1>Mood Chart Analysis</h1>
+        
+        <div class="chart-container">
+            <canvas id="moodChart"></canvas>
+        </div>
+        
+        <div class="analysis" id="analysisText">
+            <h3>Analysis Summary</h3>
+            <p>Complete the survey and journal entries to see your mood analysis.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const surveyData = JSON.parse(localStorage.getItem('surveyData')) || [];
+            const journalData = JSON.parse(localStorage.getItem('journalData')) || [];
+            
+            if (surveyData.length === 0 && journalData.length === 0) {
+                document.getElementById('analysisText').innerHTML = `
+                    <h3>No Data Available</h3>
+                    <p>Please complete the survey and journal entries to see your mood analysis.</p>
+                `;
+                return;
+            }
+
+            // Prepare chart data
+            const weeks = [...new Set([...surveyData.map(d => d.week), ...journalData.map(d => d.week)])].sort();
+            const moodScores = [];
+            const stressScores = [];
+            const spaceScores = [];
+            const sentimentScores = [];
+
+            weeks.forEach(week => {
+                const weekSurveys = surveyData.filter(d => d.week === week);
+                const weekJournals = journalData.filter(d => d.week === week);
+                
+                // Calculate average mood and stress for the week
+                if (weekSurveys.length > 0) {
+                    const avgMood = weekSurveys.reduce((sum, d) => sum + d.mood, 0) / weekSurveys.length;
+                    const avgStress = weekSurveys.reduce((sum, d) => sum + d.stress, 0) / weekSurveys.length;
+                    const avgSpace = weekSurveys.reduce((sum, d) => sum + d.stress, 0) / weekSurveys.length;
+                    moodScores.push(avgMood);
+                    stressScores.push(6 - avgStress); // Invert stress so higher is better
+                    spaceScores.push(avgMood);
+                } else {
+                    moodScores.push(null);
+                    stressScores.push(null);
+                    spaceScores.push(null);
+                }
+
+                // Calculate sentiment score for the week
+                if (weekJournals.length > 0) {
+                    const sentimentScore = weekJournals.reduce((sum, j) => {
+                        if (j.sentiment === 'positive') return sum + 5;
+                        if (j.sentiment === 'negative') return sum + 1;
+                        return sum + 3;
+                    }, 0) / weekJournals.length;
+                    sentimentScores.push(sentimentScore);
+                } else {
+                    sentimentScores.push(null);
+                }
+            });
+
+            // Create chart
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: weeks.map(w => `Week ${w}`),
+                    datasets: [{
+                        label: 'Mood Rating',
+                        data: moodScores,
+                        borderColor: '#4285f4',
+                        backgroundColor: 'rgba(66, 133, 244, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Stress Level (Inverted)',
+                        data: stressScores,
+                        borderColor: '#ea4335',
+                        backgroundColor: 'rgba(234, 67, 53, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Journal Sentiment',
+                        data: sentimentScores,
+                        borderColor: '#34a853',
+                        backgroundColor: 'rgba(52, 168, 83, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            title: {
+                                display: true,
+                                text: 'Rating (1-5)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Weekly Mood and Well-being Trends'
+                        }
+                    }
+                }
+            });
+
+            // Generate analysis
+            generateAnalysis(moodScores, stressScores, sentimentScores, surveyData, journalData);
+        });
+
+        function generateAnalysis(moodScores, stressScores, sentimentScores, surveyData, journalData) {
+            const validMoods = moodScores.filter(m => m !== null);
+            const validStress = stressScores.filter(s => s !== null);
+            const validSentiment = sentimentScores.filter(s => s !== null);
+
+            let analysis = '<h3>Analysis Summary</h3>';
+            
+            if (validMoods.length > 0) {
+                const avgMood = (validMoods.reduce((a, b) => a + b, 0) / validMoods.length).toFixed(1);
+                analysis += `<div class="metric">Average Mood: ${avgMood}/5</div>`;
+            }
+            
+            if (validStress.length > 0) {
+                const avgStress = (6 - (validStress.reduce((a, b) => a + b, 0) / validStress.length)).toFixed(1);
+                analysis += `<div class="metric">Average Stress: ${avgStress}/5</div>`;
+            }
+
+            if (validSpace.length > 0) {
+                const avgSentiment = (validSpace.reduce((a, b) => a + b, 0) / validSentiment.length).toFixed(1);
+                analysis += `<div class="metric">Work Space: ${avgSentiment}/5</div>`;
+            }
+
+            
+            if (validSentiment.length > 0) {
+                const avgSentiment = (validSentiment.reduce((a, b) => a + b, 0) / validSentiment.length).toFixed(1);
+                analysis += `<div class="metric">Journal Sentiment: ${avgSentiment}/5</div>`;
+            }
+
+            analysis += '<br><h4>Insights:</h4><ul>';
+            
+            if (validMoods.length > 1) {
+                const trend = validMoods[validMoods.length - 1] - validMoods[0];
+                if (trend > 0.5) {
+                    analysis += '<li>Your mood has been improving over time! Keep up the positive momentum.</li>';
+                } else if (trend < -0.5) {
+                    analysis += '<li>Your mood has been declining. Consider reaching out for support.</li>';
+                } else {
+                    analysis += '<li>Your mood has remained relatively stable.</li>';
+                }
+            }
+
+            analysis += `<li>Total survey responses: ${surveyData.length}</li>`;
+            analysis += `<li>Total journal entries: ${journalData.length}</li>`;
+            analysis += '</ul>';
+
+            document.getElementById('analysisText').innerHTML = analysis;
+        }
+    </script>
+</body>
+</html>
