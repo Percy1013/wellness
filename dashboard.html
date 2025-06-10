@@ -17,15 +17,10 @@
       <p class="text-sm text-gray-500" id="todayDate"></p>
     </div>
   </div>
-  <div class="header">
-    <span class="header-title">WellBeing Tracker</span>
-    <button class="logout-btn" onclick="window.location.href='index.html'">Logout</button>
-  </div>
   <button class="text-gray-500 hover:text-black text-xl">🔔</button>
 </header>
 
 <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-
   <!-- Daily Check-in -->
   <section class="lg:col-span-2">
     <div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl p-6 shadow-md">
@@ -61,19 +56,18 @@
 
   <!-- Tracker & Chart -->
   <section class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-    <!-- Work Satisfaction Tracker -->
     <div class="bg-white rounded-xl shadow-md p-6">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-xl font-bold">Work Satisfaction Tracker</h3>
       </div>
       <div class="flex gap-2 mb-4">
-        <input type="text" placeholder="Weekly Rating" class="w-1/2 border p-2 rounded" />
-        <input type="text" placeholder="Add Context" class="w-1/2 border p-2 rounded" />
+        <input type="text" id="weeklyRating" placeholder="Weekly Rating" class="w-1/2 border p-2 rounded" />
+        <input type="text" id="contextInput" placeholder="Add Context" class="w-1/2 border p-2 rounded" />
       </div>
       <div class="space-y-4" id="tracker-categories"></div>
+      <button id="submitRatings" class="mt-4 w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700">Submit Ratings</button>
     </div>
 
-    <!-- Chart -->
     <div class="bg-white rounded-xl shadow-md p-6">
       <h3 class="text-xl font-bold mb-4">Satisfaction Trends (12 Weeks)</h3>
       <div class="h-80"><canvas id="satisfactionChart"></canvas></div>
@@ -83,289 +77,15 @@
   <!-- Private Journal -->
   <div class="bg-white rounded-xl shadow-md p-6">
     <h3 class="text-xl font-bold mb-4">Private Journal</h3>
-    <textarea id="journalEntry" class="w-full h-28 border border-gray-300 rounded p-2 mb-3"
-              placeholder="What's on your mind today?"></textarea>
+    <textarea id="journalEntry" class="w-full h-28 border border-gray-300 rounded p-2 mb-3" placeholder="What's on your mind today?"></textarea>
     <div class="flex items-center mb-4">
       <input type="checkbox" id="shareHR" class="mr-2">
       <label for="shareHR" class="text-sm">Share with HR (optional)</label>
     </div>
-    <button id="saveEntry" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-      Save Entry
-    </button>
+    <button id="saveEntry" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Save Entry</button>
   </div>
-
 </main>
 
-<!-- JavaScript -->
-<script>
-  // Set today's date
-  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  });
-
-  // Mood tracker buttons
-  const moodButtons = document.querySelectorAll('.mood-button');
-  let selectedMood = null;
-  moodButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      moodButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-white', 'bg-purple-100'));
-      button.classList.add('ring-2', 'ring-white', 'bg-purple-100');
-      selectedMood = button.getAttribute('data-mood');
-    });
-  });
-
-  document.getElementById('submitCheckin').addEventListener('click', () => {
-    const reflection = document.getElementById('reflectionText').value.trim();
-    if (!selectedMood) return alert('Please select your mood.');
-    if (!reflection) return alert('Please write a reflection.');
-    alert(`Check-in saved!\nMood: ${selectedMood}\nReflection: ${reflection}`);
-  });
-
-  // Journal submission
-  document.getElementById("saveEntry").addEventListener("click", () => {
-    const entryText = document.getElementById("journalEntry").value.trim();
-    const shareWithHR = document.getElementById("shareHR").checked;
-
-    if (!entryText) return alert("Please write something in your journal.");
-    if (!shareWithHR) return alert("Check 'Share with HR' if you want to submit.");
-
-    const journalData = {
-      employee: "Sarah",
-      date: new Date().toISOString(),
-      entry: entryText
-    };
-
-    fetch("https://flicker-fresh-beechnut.glitch.me/api/journal", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(journalData)
-    }).then(response => {
-      if (response.ok) {
-        alert("Journal entry shared.");
-        document.getElementById("journalEntry").value = "";
-        document.getElementById("shareHR").checked = false;
-      } else {
-        alert("Failed to save entry.");
-      }
-    }).catch(error => {
-      console.error("Error:", error);
-      alert("Server error.");
-    });
-  });
-
-  // Work Satisfaction Tracker
-  fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
-  .then(res => res.json())
-  .then(trackerCategories => {
-    const trackerContainer = document.getElementById('tracker-categories');
-    trackerContainer.innerHTML = "";
-
-    trackerCategories.forEach(category => {
-      const id = category.toLowerCase().replace(/\s+/g, '-');
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = `
-        <label class="font-medium">${category}</label>
-        <div class="flex items-center mt-1 gap-3">
-          <div class="flex gap-1" id="${id}-buttons">
-            ${[...Array(10)].map((_, i) => `
-              <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
-                data-category="${id}" data-value="${i + 1}">${i + 1}</button>`).join('')}
-          </div>
-          <span class="text-sm text-gray-600" id="${id}-score"></span>
-        </div>
-      `;
-      trackerContainer.appendChild(wrapper);
-    });
-  });
-
-  const trackerContainer = document.getElementById('tracker-categories');
-  trackerCategories.forEach(category => {
-    const id = category.toLowerCase().replace(/\s+/g, '-');
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = `
-      <label class="font-medium">${category}</label>
-      <div class="flex items-center mt-1 gap-3">
-        <div class="flex gap-1" id="${id}-buttons">
-          ${[...Array(10)].map((_, i) => `
-            <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
-              data-category="${id}" data-value="${i + 1}">${i + 1}</button>`).join('')}
-        </div>
-        <span class="text-sm text-gray-600" id="${id}-score"></span>
-      </div>
-    `;
-    trackerContainer.appendChild(wrapper);
-  });
-
-  document.addEventListener('click', e => {
-    if (e.target.matches('button[data-category]')) {
-      const category = e.target.getAttribute('data-category');
-      const value = e.target.getAttribute('data-value');
-      document.querySelectorAll(`#${category}-buttons button`).forEach(btn => {
-        btn.classList.remove('bg-blue-500', 'text-white');
-        btn.classList.add('bg-gray-100');
-      });
-      e.target.classList.remove('bg-gray-100');
-      e.target.classList.add('bg-blue-500', 'text-white');
-      document.getElementById(`${category}-score`).textContent = `${value}/10`;
-    }
-  });
-  <button id="submitRatings"
-  class="mt-4 w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700">
-  Submit Ratings
-</button>
-  <script>
-  // Load categories dynamically from backend
-  fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
-    .then(res => res.json())
-    .then(trackerCategories => {
-      const trackerContainer = document.getElementById('tracker-categories');
-      trackerContainer.innerHTML = "";
-
-      trackerCategories.forEach(category => {
-        const id = category.toLowerCase().replace(/\s+/g, '-');
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = `
-          <label class="font-medium">${category}</label>
-          <div class="flex items-center mt-1 gap-3">
-            <div class="flex gap-1 rating-buttons" id="${id}-buttons">
-              ${[...Array(10)].map((_, i) => `
-                <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
-                  data-category="${id}" data-value="${i + 1}">${i + 1}</button>`).join('')}
-            </div>
-            <span class="text-sm text-gray-600" id="${id}-score"></span>
-          </div>
-        `;
-        trackerContainer.appendChild(wrapper);
-      });
-
-      // Attach listeners for dynamically created buttons
-      document.querySelectorAll('button[data-category]').forEach(button => {
-        button.addEventListener('click', (e) => {
-          const category = e.target.getAttribute('data-category');
-          const value = e.target.getAttribute('data-value');
-          document.querySelectorAll(`#${category}-buttons button`).forEach(btn => {
-            btn.classList.remove('bg-blue-500', 'text-white');
-            btn.classList.add('bg-gray-100');
-          });
-          e.target.classList.remove('bg-gray-100');
-          e.target.classList.add('bg-blue-500', 'text-white');
-          document.getElementById(`${category}-score`).textContent = `${value}/10`;
-        });
-      });
-    });
-
-  // Submit ratings to backend
-  document.getElementById("submitRatings").addEventListener("click", () => {
-    const context = document.querySelector('input[placeholder="Add Context"]').value.trim();
-    const responses = {};
-
-    document.querySelectorAll('button[data-category].bg-blue-500').forEach(btn => {
-      const category = btn.getAttribute('data-category');
-      const value = parseInt(btn.getAttribute('data-value'));
-      responses[category] = value;
-    });
-
-    if (Object.keys(responses).length === 0) {
-      alert("Please rate at least one category.");
-      return;
-    }
-
-    const data = {
-      employee: "Sarah",
-      date: new Date().toISOString(),
-      responses,
-      context
-    };
-
-    fetch("https://flicker-fresh-beechnut.glitch.me/api/ratings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    })
-    .then(res => res.json())
-    .then(() => alert("Ratings submitted!"))
-    .catch(err => {
-      console.error("Rating submit error:", err);
-      alert("Error submitting rating.");
-    });
-  });
-</script>
-
-  // Fix: Ensure Chart renders after canvas is loaded
-  window.onload = function () {
-    const ctx = document.getElementById('satisfactionChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [...Array(12)].map((_, i) => `Week ${i + 1}`),
-        datasets: [
-          {
-            label: 'Work-life Balance',
-            data: [6, 7, 7, 8, 7, 8, 8, 7, 7, 8, 8, 9],
-            borderColor: '#6366f1',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#6366f1'
-          },
-          {
-            label: 'Team Collaboration',
-            data: [5, 6, 6, 6, 7, 7, 8, 7, 7, 8, 7, 8],
-            borderColor: '#10b981',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#10b981'
-          },
-          {
-            label: 'Management Support',
-            data: [4, 5, 6, 6, 6, 7, 7, 6, 6, 7, 6, 7],
-            borderColor: '#f59e0b',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#f59e0b'
-          },
-          {
-            label: 'Career Growth',
-            data: [5, 5, 6, 6, 6, 7, 7, 6, 6, 7, 7, 8],
-            borderColor: '#ef4444',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#ef4444'
-          },
-          {
-            label: 'Workload Manageability',
-            data: [3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7],
-            borderColor: '#3b82f6',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#3b82f6'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { usePointStyle: true, boxWidth: 10 }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 10,
-            ticks: { stepSize: 1 }
-          }
-        }
-      }
-    });
-  };
-</script>
-
+<script src="https://flicker-fresh-beechnut.glitch.me/public/dashboard.js"></script>
 </body>
 </html>
