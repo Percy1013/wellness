@@ -9,7 +9,6 @@
 </head>
 <body class="bg-[#f0f4ff] text-gray-800 font-sans">
 
-<!-- Header -->
 <header class="bg-white shadow py-4 px-8 flex justify-between items-center">
   <div class="flex items-center gap-4">
     <div class="bg-blue-200 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">HR</div>
@@ -17,10 +16,6 @@
       <p class="text-md font-semibold">Good morning, Sarah!</p>
       <p class="text-sm text-gray-500" id="todayDate"></p>
     </div>
-  </div>
-  <div class="header">
-    <span class="header-title">WellBeing Tracker</span>
-    <button class="logout-btn" onclick="window.location.href='index.html'">Logout</button>
   </div>
   <button class="text-gray-500 hover:text-black text-xl">🔔</button>
 </header>
@@ -51,23 +46,21 @@
   <!-- Notifications -->
   <aside class="space-y-6">
     <div class="bg-white rounded-xl shadow-md p-6">
-      <h3 class="text-lg font-bold mb-4">🔔 Notifications <span class="ml-2 bg-blue-100 text-blue-700 px-2 rounded-full text-xs">1</span></h3>
+      <h3 class="text-lg font-bold mb-4">🔔 Notifications</h3>
       <ul class="space-y-4 text-sm">
-        <li><p class="font-semibold">🗓️ HR Check-in Scheduled</p><p class="text-gray-500">Meeting with Leon tomorrow at 2:00 PM</p><p class="text-xs text-gray-400">2 hours ago</p></li>
-        <li><p class="font-semibold">🔈 Daily Check-in Reminder</p><p class="text-gray-500">Don't forget to complete today's wellness check-in</p><p class="text-xs text-gray-400">4 hours ago</p></li>
-        <li><p class="font-semibold">📊 Wellness Insight</p><p class="text-gray-500">Your mood scores have improved 15% this month!</p><p class="text-xs text-gray-400">1 day ago</p></li>
-        <li class="border-l-4 border-red-500 pl-3"><p class="font-semibold text-red-500">Response to Your Concern <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full ml-2">Urgent</span></p><p class="text-gray-500">HR has responded to your workload concern from last week</p><p class="text-xs text-gray-400">2 days ago</p></li>
+        <li><p class="font-semibold">🗓️ HR Check-in Scheduled</p><p class="text-gray-500">Meeting with Leon tomorrow at 2:00 PM</p></li>
+        <li><p class="font-semibold">🔈 Daily Check-in Reminder</p><p class="text-gray-500">Don't forget to complete today's wellness check-in</p></li>
+        <li><p class="font-semibold">📊 Wellness Insight</p><p class="text-gray-500">Your mood scores have improved 15% this month!</p></li>
       </ul>
     </div>
   </aside>
 
-  <!-- Work Satisfaction Tracker & Chart -->
+  <!-- Tracker & Chart -->
   <section class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-    <!-- Satisfaction Tracker -->
+    <!-- Work Satisfaction Tracker -->
     <div class="bg-white rounded-xl shadow-md p-6">
       <div class="flex justify-between items-center mb-4">
         <h3 class="text-xl font-bold">Work Satisfaction Tracker</h3>
-        <button class="text-sm border px-3 py-1 rounded hover:bg-gray-100">Show Comparison</button>
       </div>
       <div class="flex gap-2 mb-4">
         <input type="text" placeholder="Weekly Rating" class="w-1/2 border p-2 rounded" />
@@ -76,7 +69,7 @@
       <div class="space-y-4" id="tracker-categories"></div>
     </div>
 
-    <!-- Satisfaction Chart -->
+    <!-- Chart -->
     <div class="bg-white rounded-xl shadow-md p-6">
       <h3 class="text-xl font-bold mb-4">Satisfaction Trends (12 Weeks)</h3>
       <div class="h-80"><canvas id="satisfactionChart"></canvas></div>
@@ -84,87 +77,29 @@
   </section>
 
   <!-- Private Journal -->
-  <!-- Private Journal -->
-<div class="bg-white rounded-xl shadow-md p-6">
-  <h3 class="text-xl font-bold mb-4">Private Journal</h3>
-
-  <!-- Journal Control Buttons -->
-  <div class="flex gap-2 mb-3">
-    <button class="px-4 py-1 rounded bg-blue-100 text-blue-700">Write</button>
-    <button class="px-4 py-1 rounded bg-gray-100 text-gray-700">Prompts</button>
-    <button class="px-4 py-1 rounded bg-gray-100 text-gray-700">History</button>
+  <div class="bg-white rounded-xl shadow-md p-6">
+    <h3 class="text-xl font-bold mb-4">Private Journal</h3>
+    <textarea id="journalEntry" class="w-full h-28 border border-gray-300 rounded p-2 mb-3"
+              placeholder="What's on your mind today?"></textarea>
+    <div class="flex items-center mb-4">
+      <input type="checkbox" id="shareHR" class="mr-2">
+      <label for="shareHR" class="text-sm">Share with HR (optional)</label>
+    </div>
+    <button id="saveEntry" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+      Save Entry
+    </button>
   </div>
 
-  <!-- Journal Entry Textarea -->
-  <textarea id="journalEntry" class="w-full h-28 border border-gray-300 rounded p-2 mb-3"
-            placeholder="What's on your mind today?"></textarea>
-
-  <!-- Share Checkbox -->
-  <div class="flex items-center mb-4">
-    <input type="checkbox" id="shareHR" class="mr-2">
-    <label for="shareHR" class="text-sm">Share with HR (optional)</label>
-  </div>
-
-  <!-- Submit Button -->
-  <button id="saveEntry" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-    Save Entry
-  </button>
-</div>
-
-<!-- Script for saving journal -->
-<script>
-  document.getElementById("saveEntry").addEventListener("click", () => {
-    const entryText = document.getElementById("journalEntry").value.trim();
-    const shareWithHR = document.getElementById("shareHR").checked;
-
-    if (!entryText) {
-      alert("Please write something in your journal.");
-      return;
-    }
-
-    if (!shareWithHR) {
-      alert("Check 'Share with HR' if you want to submit.");
-      return;
-    }
-
-    // Prepare data
-    const journalData = {
-      employee: "Sarah", // You can dynamically assign this later
-      date: new Date().toISOString(),
-      entry: entryText
-    };
-
-    // Send to backend (e.g., Node.js/Express or Firebase)
-    fetch("https://flicker-fresh-beechnut.glitch.me/api/journal", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(journalData)
-    }).then(response => {
-      if (response.ok) {
-        alert("Your journal entry has been shared with HR.");
-        document.getElementById("journalEntry").value = "";
-        document.getElementById("shareHR").checked = false;
-      } else {
-        alert("Failed to save entry. Please try again later.");
-      }
-    }).catch(error => {
-      console.error("Error:", error);
-      alert("Server error occurred.");
-    });
-  });
-</script>
-
+</main>
 
 <!-- JavaScript -->
 <script>
-  // Set current date
+  // Set today's date
   document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 
-  // Mood tracker
+  // Mood tracker buttons
   const moodButtons = document.querySelectorAll('.mood-button');
   let selectedMood = null;
   moodButtons.forEach(button => {
@@ -182,32 +117,46 @@
     alert(`Check-in saved!\nMood: ${selectedMood}\nReflection: ${reflection}`);
   });
 
-  // Work Satisfaction Tracker Buttons
-  fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
-  .then(res => res.json())
-  .then(trackerCategories => {
-    const trackerContainer = document.getElementById('tracker-categories');
-    trackerContainer.innerHTML = "";
+  // Journal submission
+  document.getElementById("saveEntry").addEventListener("click", () => {
+    const entryText = document.getElementById("journalEntry").value.trim();
+    const shareWithHR = document.getElementById("shareHR").checked;
 
-    trackerCategories.forEach(category => {
-      const id = category.toLowerCase().replace(/\s+/g, '-');
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = `
-        <label class="font-medium">${category}</label>
-        <div class="flex items-center mt-1 gap-3">
-          <div class="flex gap-1" id="${id}-buttons">
-            ${[...Array(10)].map((_, i) => `
-              <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
-                data-category="${id}" data-value="${i + 1}">${i + 1}</button>`).join('')}
-          </div>
-          <span class="text-sm text-gray-600" id="${id}-score"></span>
-        </div>
-      `;
-      trackerContainer.appendChild(wrapper);
+    if (!entryText) return alert("Please write something in your journal.");
+    if (!shareWithHR) return alert("Check 'Share with HR' if you want to submit.");
+
+    const journalData = {
+      employee: "Sarah",
+      date: new Date().toISOString(),
+      entry: entryText
+    };
+
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/journal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(journalData)
+    }).then(response => {
+      if (response.ok) {
+        alert("Journal entry shared.");
+        document.getElementById("journalEntry").value = "";
+        document.getElementById("shareHR").checked = false;
+      } else {
+        alert("Failed to save entry.");
+      }
+    }).catch(error => {
+      console.error("Error:", error);
+      alert("Server error.");
     });
   });
 
-
+  // Work Satisfaction Tracker
+  const trackerCategories = [
+    'Work-life Balance',
+    'Team Collaboration',
+    'Management Support',
+    'Career Growth',
+    'Workload Manageability'
+  ];
   const trackerContainer = document.getElementById('tracker-categories');
   trackerCategories.forEach(category => {
     const id = category.toLowerCase().replace(/\s+/g, '-');
@@ -240,10 +189,8 @@
     }
   });
 
-  // Chart.js for Satisfaction Trends
-<script>
+  // Fix: Ensure Chart renders after canvas is loaded
   window.onload = function () {
-    // Chart.js for Satisfaction Trends
     const ctx = document.getElementById('satisfactionChart').getContext('2d');
     new Chart(ctx, {
       type: 'line',
@@ -317,7 +264,6 @@
     });
   };
 </script>
-
 
 </body>
 </html>
