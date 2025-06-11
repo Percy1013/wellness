@@ -168,73 +168,82 @@
   });
 
   window.onload = function () {
-    fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
-      .then(res => res.json())
-      .then(trackerCategories => {
-        const trackerContainer = document.getElementById('tracker-categories');
-        trackerContainer.innerHTML = "";
-        trackerCategories.forEach(category => {
-          const id = category.toLowerCase().replace(/\s+/g, '-');
-          const wrapper = document.createElement('div');
-          wrapper.innerHTML = `
-            <label class="font-medium">${category}</label>
-            <div class="flex items-center mt-1 gap-3">
-              <div class="flex gap-1" id="${id}-buttons">
-                ${[...Array(10)].map((_, i) => `
-                  <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
-                    data-category="${id}" data-value="${i + 1}">${i + 1}</button>`).join('')}
-              </div>
-              <span class="text-sm text-gray-600" id="${id}-score"></span>
+  fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
+    .then(res => res.json())
+    .then(trackerCategories => {
+      const trackerContainer = document.getElementById('tracker-categories');
+      trackerContainer.innerHTML = "";
+
+      trackerCategories.forEach(category => {
+        const id = category.toLowerCase().replace(/\s+/g, '-');
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+          <label class="font-medium">${category}</label>
+          <div class="flex items-center mt-1 gap-3">
+            <div class="flex gap-1" id="${id}-buttons">
+              ${[...Array(10)].map((_, i) => `
+                <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
+                  data-category="${category}" data-value="${i + 1}">${i + 1}</button>`).join('')}
             </div>
-          `;
-          trackerContainer.appendChild(wrapper);
-        });
+            <span class="text-sm text-gray-600" id="${id}-score"></span>
+          </div>
+        `;
+        trackerContainer.appendChild(wrapper);
+      });
 
-        document.querySelectorAll('button[data-category]').forEach(button => {
-          button.addEventListener('click', (e) => {
-            const category = e.target.getAttribute('data-category');
-            const value = e.target.getAttribute('data-value');
-            document.querySelectorAll(`#${category}-buttons button`).forEach(btn => {
-              btn.classList.remove('bg-blue-500', 'text-white');
-              btn.classList.add('bg-gray-100');
-            });
-            e.target.classList.remove('bg-gray-100');
-            e.target.classList.add('bg-blue-500', 'text-white');
-            document.getElementById(`${category}-score`).textContent = `${value}/10`;
+      // Attach click handlers
+      document.querySelectorAll('button[data-category]').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const category = e.target.getAttribute('data-category');
+          const id = category.toLowerCase().replace(/\s+/g, '-');
+          const value = e.target.getAttribute('data-value');
+          document.querySelectorAll(`#${id}-buttons button`).forEach(btn => {
+            btn.classList.remove('bg-blue-500', 'text-white');
+            btn.classList.add('bg-gray-100');
           });
+          e.target.classList.remove('bg-gray-100');
+          e.target.classList.add('bg-blue-500', 'text-white');
+          document.getElementById(`${id}-score`).textContent = `${value}/10`;
         });
-      });
-
-    document.getElementById("submitRatings").addEventListener("click", () => {
-      const context = document.getElementById("contextInput").value.trim();
-      const responses = {};
-      document.querySelectorAll('button[data-category].bg-blue-500').forEach(btn => {
-        const category = btn.getAttribute('data-category');
-        const value = parseInt(btn.getAttribute('data-value'));
-        responses[category] = value;
-      });
-      if (Object.keys(responses).length === 0) {
-        alert("Please rate at least one category.");
-        return;
-      }
-      const data = {
-        employee: "Sarah",
-        date: new Date().toISOString(),
-        responses,
-        context
-      };
-      fetch("https://flicker-fresh-beechnut.glitch.me/api/ratings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-      .then(res => res.json())
-      .then(() => alert("Ratings submitted!"))
-      .catch(err => {
-        console.error("Rating submit error:", err);
-        alert("Error submitting rating.");
       });
     });
+
+  // Submit ratings
+  document.getElementById("submitRatings").addEventListener("click", () => {
+    const context = document.getElementById("contextInput").value.trim();
+    const responses = {};
+
+    document.querySelectorAll('button[data-category].bg-blue-500').forEach(btn => {
+      const category = btn.getAttribute('data-category');
+      const value = parseInt(btn.getAttribute('data-value'));
+      responses[category] = value;
+    });
+
+    if (Object.keys(responses).length === 0) {
+      alert("Please rate at least one category.");
+      return;
+    }
+
+    const data = {
+      employee: "Sarah",
+      date: new Date().toISOString(),
+      responses,
+      context
+    };
+
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/ratings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(() => alert("Ratings submitted!"))
+    .catch(err => {
+      console.error("Rating submit error:", err);
+      alert("Error submitting rating.");
+    });
+  });
+};
 
     const ctx = document.getElementById('satisfactionChart').getContext('2d');
     new Chart(ctx, {
