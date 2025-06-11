@@ -9,7 +9,6 @@
 </head>
 <body class="bg-[#f0f4ff] text-gray-800 font-sans">
 
-<!-- Header -->
 <header class="bg-white shadow py-4 px-8 flex justify-between items-center">
   <div class="flex items-center gap-4">
     <div class="bg-blue-200 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold">HR</div>
@@ -18,21 +17,20 @@
       <p class="text-sm text-gray-500" id="todayDate"></p>
     </div>
   </div>
-  <div class="header">
-    <span class="header-title">WellBeing Tracker</span>
-    <button class="logout-btn" onclick="window.location.href='index.html'">Logout</button>
-  </div>
-  <button class="text-gray-500 hover:text-black text-xl">🔔</button>
+  <button
+  id="logoutBtn"
+  class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+>
+  Logout
+</button>
 </header>
 
 <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-  <!-- Daily Check-in -->
   <section class="lg:col-span-2">
     <div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl p-6 shadow-md">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-lg font-bold">Daily Check-in</h2>
-        <span class="text-sm bg-white text-purple-700 px-3 py-1 rounded-full font-semibold">🔥 11 day streak</span>
+        <span id="streakDisplay" class="text-sm bg-white text-purple-700 px-3 py-1 rounded-full font-semibold"></span>
       </div>
       <p class="mb-2">How are you feeling today?</p>
       <div class="flex flex-wrap gap-3 mb-4">
@@ -48,244 +46,217 @@
     </div>
   </section>
 
-  <!-- Notifications -->
   <aside class="space-y-6">
     <div class="bg-white rounded-xl shadow-md p-6">
-      <h3 class="text-lg font-bold mb-4">🔔 Notifications <span class="ml-2 bg-blue-100 text-blue-700 px-2 rounded-full text-xs">1</span></h3>
+      <h3 class="text-lg font-bold mb-4">🔔 Notifications</h3>
       <ul class="space-y-4 text-sm">
-        <li><p class="font-semibold">🗓️ HR Check-in Scheduled</p><p class="text-gray-500">CLient Meeting at 3:00 pm</p><p class="text-xs text-gray-400">1 hours ago</p></li>
-        <li><p class="font-semibold">🔈 Daily Check-in Reminder</p><p class="text-gray-500">Consult with Hr at 1:00 pm</p><p class="text-xs text-gray-400">2 hours ago</p></li>
-        <li><p class="font-semibold">📊 Wellness Insight</p><p class="text-gray-500">Your mood scores have improved 30% this month!</p><p class="text-xs text-gray-400">1 day ago</p></li>
-        <li class="border-l-4 border-red-500 pl-3"><p class="font-semibold text-red-500">Response to Your Concern <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full ml-2">Urgent</span></p><p class="text-gray-500">HR has responded to your workload concern from last week</p><p class="text-xs text-gray-400">2 days ago</p></li>
+        <li><p class="font-semibold">🗓️ HR Check-in Scheduled</p><p class="text-gray-500">Meeting with Client at 3:00 PM</p></li>
+        <li><p class="font-semibold">🔈 Daily Check-in Reminder</p><p class="text-gray-500">Don't forget to complete today's wellness check-in</p></li>
+        <li><p class="font-semibold">📊 Wellness Insight</p><p class="text-gray-500">Your mood scores have improved 20% this month!</p></li>
       </ul>
     </div>
   </aside>
 
- <!-- Tracker & Chart -->
   <section class="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-    <!-- Work Satisfaction Tracker -->
     <div class="bg-white rounded-xl shadow-md p-6">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-bold">Work Satisfaction Tracker</h3>
-      </div>
+      <h3 class="text-xl font-bold mb-4">Work Satisfaction Tracker</h3>
       <div class="flex gap-2 mb-4">
-        <input type="text" placeholder="Weekly Rating" class="w-1/2 border p-2 rounded" />
-        <input type="text" placeholder="Add Context" class="w-1/2 border p-2 rounded" />
+        <input type="text" id="contextInput" placeholder="Add Context" class="w-full border p-2 rounded" />
       </div>
       <div class="space-y-4" id="tracker-categories"></div>
+      <button id="submitRatings" class="mt-4 w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700">Submit Ratings</button>
     </div>
 
-    <!-- Chart -->
     <div class="bg-white rounded-xl shadow-md p-6">
       <h3 class="text-xl font-bold mb-4">Satisfaction Trends (12 Weeks)</h3>
       <div class="h-80"><canvas id="satisfactionChart"></canvas></div>
     </div>
   </section>
 
-  <!-- Private Journal -->
   <div class="bg-white rounded-xl shadow-md p-6">
     <h3 class="text-xl font-bold mb-4">Private Journal</h3>
-    <textarea id="journalEntry" class="w-full h-28 border border-gray-300 rounded p-2 mb-3"
-              placeholder="What's on your mind today?"></textarea>
+    <textarea id="journalEntry" class="w-full h-28 border border-gray-300 rounded p-2 mb-3" placeholder="What's on your mind today?"></textarea>
     <div class="flex items-center mb-4">
       <input type="checkbox" id="shareHR" class="mr-2">
       <label for="shareHR" class="text-sm">Share with HR (optional)</label>
     </div>
-    <button id="saveEntry" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-      Save Entry
-    </button>
+    <button id="saveEntry" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Save Entry</button>
   </div>
-
 </main>
 
-<!-- JavaScript -->
 <script>
-  // Set today's date
   document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 
-  // Mood tracker buttons
-  const moodButtons = document.querySelectorAll('.mood-button');
-  let selectedMood = null;
-  moodButtons.forEach(button => {
+  let streakCount = parseInt(localStorage.getItem('streak') || '0');
+  function updateStreakDisplay() {
+    document.getElementById("streakDisplay").innerHTML = `🔥 ${streakCount} day streak`;
+  }
+  updateStreakDisplay();
+
+  document.querySelectorAll('.mood-button').forEach(button => {
     button.addEventListener('click', () => {
-      moodButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-white', 'bg-purple-100'));
-      button.classList.add('ring-2', 'ring-white', 'bg-purple-100');
+      document.querySelectorAll('.mood-button').forEach(btn => btn.classList.remove('ring-2', 'ring-white', 'bg-purple-100', 'scale-110'));
+      button.classList.add('ring-2', 'ring-white', 'bg-purple-100', 'scale-110');
       selectedMood = button.getAttribute('data-mood');
     });
   });
+
+  let selectedMood = null;
 
   document.getElementById('submitCheckin').addEventListener('click', () => {
     const reflection = document.getElementById('reflectionText').value.trim();
     if (!selectedMood) return alert('Please select your mood.');
     if (!reflection) return alert('Please write a reflection.');
-    alert(`Check-in saved!\nMood: ${selectedMood}\nReflection: ${reflection}`);
+
+    const data = {
+      employee: "Alex",
+      mood: selectedMood,
+      reflection,
+      date: new Date().toISOString()
+    };
+
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/checkins", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    }).then(res => {
+      if (res.ok) {
+        streakCount++;
+        localStorage.setItem('streak', streakCount);
+        updateStreakDisplay();
+        alert("Check-in submitted!");
+        document.getElementById('reflectionText').value = "";
+      } else {
+        alert("Error submitting check-in.");
+      }
+    });
   });
 
-  // Journal submission
   document.getElementById("saveEntry").addEventListener("click", () => {
-    const entryText = document.getElementById("journalEntry").value.trim();
-    const shareWithHR = document.getElementById("shareHR").checked;
-
-    if (!entryText) return alert("Please write something in your journal.");
-    if (!shareWithHR) return alert("Check 'Share with HR' if you want to submit.");
+    const entry = document.getElementById("journalEntry").value.trim();
+    const share = document.getElementById("shareHR").checked;
+    if (!entry) return alert("Please write something.");
+    if (!share) return alert("Check 'Share with HR' to submit.");
 
     const journalData = {
-      employee: "Sarah",
+      employee: "Alex",
       date: new Date().toISOString(),
-      entry: entryText
+      entry
     };
 
     fetch("https://flicker-fresh-beechnut.glitch.me/api/journal", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(journalData)
-    }).then(response => {
-      if (response.ok) {
-        alert("Journal entry shared.");
+    }).then(res => {
+      if (res.ok) {
+        alert("Journal submitted!");
         document.getElementById("journalEntry").value = "";
         document.getElementById("shareHR").checked = false;
       } else {
-        alert("Failed to save entry.");
+        alert("Error saving journal.");
       }
-    }).catch(error => {
-      console.error("Error:", error);
-      alert("Server error.");
     });
   });
 
-  // Work Satisfaction Tracker
- fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
-  .then(res => res.json())
-  .then(trackerCategories => {
-    const trackerContainer = document.getElementById('tracker-categories');
-    trackerContainer.innerHTML = "";
-
-    trackerCategories.forEach(category => {
-      const id = category.toLowerCase().replace(/\s+/g, '-');
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = `
-        <label class="font-medium">${category}</label>
-        <div class="flex items-center mt-1 gap-3">
-          <div class="flex gap-1" id="${id}-buttons">
-            ${[...Array(10)].map((_, i) => `
-              <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
-                data-category="${id}" data-value="${i + 1}">${i + 1}</button>`).join('')}
+  // Load categories from admin settings
+  fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
+    .then(res => res.json())
+    .then(categories => {
+      const container = document.getElementById("tracker-categories");
+      categories.forEach(category => {
+        const id = category.toLowerCase().replace(/\s+/g, '-');
+        const div = document.createElement('div');
+        div.innerHTML = `
+          <label class="font-medium">${category}</label>
+          <div class="flex items-center gap-3 mt-1">
+            <div class="flex gap-1" id="${id}-buttons">
+              ${[...Array(10)].map((_, i) => `
+                <button class="rating-btn px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
+                  data-category="${category}" data-value="${i + 1}">${i + 1}</button>`).join("")}
+            </div>
+            <span class="text-sm text-gray-600" id="${id}-score"></span>
           </div>
-          <span class="text-sm text-gray-600" id="${id}-score"></span>
-        </div>
-      `;
-      trackerContainer.appendChild(wrapper);
-    });
-  });
-
-  const trackerContainer = document.getElementById('tracker-categories');
-  trackerCategories.forEach(category => {
-    const id = category.toLowerCase().replace(/\s+/g, '-');
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = `
-      <label class="font-medium">${category}</label>
-      <div class="flex items-center mt-1 gap-3">
-        <div class="flex gap-1" id="${id}-buttons">
-          ${[...Array(10)].map((_, i) => `
-            <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
-              data-category="${id}" data-value="${i + 1}">${i + 1}</button>`).join('')}
-        </div>
-        <span class="text-sm text-gray-600" id="${id}-score"></span>
-      </div>
-    `;
-    trackerContainer.appendChild(wrapper);
-  });
-
-  document.addEventListener('click', e => {
-    if (e.target.matches('button[data-category]')) {
-      const category = e.target.getAttribute('data-category');
-      const value = e.target.getAttribute('data-value');
-      document.querySelectorAll(`#${category}-buttons button`).forEach(btn => {
-        btn.classList.remove('bg-blue-500', 'text-white');
-        btn.classList.add('bg-gray-100');
+        `;
+        container.appendChild(div);
       });
-      e.target.classList.remove('bg-gray-100');
-      e.target.classList.add('bg-blue-500', 'text-white');
-      document.getElementById(`${category}-score`).textContent = `${value}/10`;
+
+      // Rating button clicks
+      document.querySelectorAll('.rating-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const category = btn.getAttribute('data-category');
+          const value = btn.getAttribute('data-value');
+          const id = category.toLowerCase().replace(/\s+/g, '-');
+
+          document.querySelectorAll(`#${id}-buttons .rating-btn`).forEach(b => {
+            b.classList.remove('bg-blue-500', 'text-white');
+            b.classList.add('bg-gray-100');
+          });
+          btn.classList.add('bg-blue-500', 'text-white');
+          btn.classList.remove('bg-gray-100');
+
+          document.getElementById(`${id}-score`).textContent = `${value}/10`;
+        });
+      });
+    });
+
+  document.getElementById("submitRatings").addEventListener("click", () => {
+    const context = document.getElementById("contextInput").value.trim();
+    const responses = {};
+    document.querySelectorAll('.rating-btn.bg-blue-500').forEach(btn => {
+      const category = btn.getAttribute('data-category');
+      const value = parseInt(btn.getAttribute('data-value'));
+      responses[category] = value;
+    });
+
+    if (Object.keys(responses).length === 0) return alert("Please rate at least one category.");
+
+    const data = {
+      employee: "Alex",
+      date: new Date().toISOString(),
+      responses,
+      context
+    };
+
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/ratings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    }).then(res => res.ok ? alert("Ratings submitted!") : alert("Error submitting ratings."));
+  });
+
+  // Chart.js Example
+  const ctx = document.getElementById('satisfactionChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [...Array(12)].map((_, i) => `Week ${i + 1}`),
+      datasets: [{
+        label: 'Career Growth',
+        data: [4, 5, 6, 6, 7, 7, 8, 7, 8, 9, 9, 10],
+        borderColor: '#ef4444',
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#ef4444'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 10, ticks: { stepSize: 1 } }
+      }
     }
   });
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+  window.location.href = "index.html"; // Redirect to home/login page
+});
 
-  // Fix: Ensure Chart renders after canvas is loaded
-  window.onload = function () {
-    const ctx = document.getElementById('satisfactionChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [...Array(12)].map((_, i) => `Week ${i + 1}`),
-        datasets: [
-          {
-            label: 'Work-life Balance',
-            data: [6, 7, 7, 8, 7, 8, 8, 7, 7, 8, 8, 9],
-            borderColor: '#6366f1',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#6366f1'
-          },
-          {
-            label: 'Team Collaboration',
-            data: [5, 6, 6, 6, 7, 7, 8, 7, 7, 8, 7, 8],
-            borderColor: '#10b981',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#10b981'
-          },
-          {
-            label: 'Management Support',
-            data: [4, 5, 6, 6, 6, 7, 7, 6, 6, 7, 6, 7],
-            borderColor: '#f59e0b',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#f59e0b'
-          },
-          {
-            label: 'Career Growth',
-            data: [5, 5, 6, 6, 6, 7, 7, 6, 6, 7, 7, 8],
-            borderColor: '#ef4444',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#ef4444'
-          },
-          {
-            label: 'Workload Manageability',
-            data: [3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7],
-            borderColor: '#3b82f6',
-            backgroundColor: 'transparent',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#3b82f6'
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { usePointStyle: true, boxWidth: 10 }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 10,
-            ticks: { stepSize: 1 }
-          }
-        }
-      }
-    });
-  };
 </script>
 
 </body>
