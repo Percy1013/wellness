@@ -172,6 +172,80 @@
       .then(trackerCategories => {
         const trackerContainer = document.getElementById('tracker-categories');
         trackerContainer.innerHTML = "";
+        const categories = [5, 4, 3, 2, 1]; // Week numbers
+const trackerContainer = document.getElementById('trackerContainer');
+
+categories.forEach(week => {
+  const wrapper = document.createElement('div');
+  wrapper.className = "flex items-center gap-3";
+  wrapper.innerHTML = `
+    <span class="font-medium w-6">${week}</span>
+    <div class="flex gap-1" id="week-${week}-buttons">
+      ${[...Array(10)].map((_, i) => `
+        <button type="button" 
+                class="rating-btn px-2 py-1 rounded bg-gray-100 hover:bg-blue-100" 
+                data-week="${week}" data-value="${i + 1}">
+          ${i + 1}
+        </button>`).join('')}
+    </div>
+    <span id="week-${week}-score" class="text-sm text-gray-500"></span>
+  `;
+  trackerContainer.appendChild(wrapper);
+});
+
+// Button interaction
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.rating-btn')) {
+    const btn = e.target;
+    const week = btn.getAttribute('data-week');
+    const value = btn.getAttribute('data-value');
+    const group = document.querySelectorAll(`#week-${week}-buttons .rating-btn`);
+
+    group.forEach(b => {
+      b.classList.remove('bg-blue-500', 'text-white');
+      b.classList.add('bg-gray-100');
+    });
+
+    btn.classList.remove('bg-gray-100');
+    btn.classList.add('bg-blue-500', 'text-white');
+
+    document.getElementById(`week-${week}-score`).textContent = `${value}/10`;
+  }
+});
+
+// Submit button
+document.getElementById("submitRatings").addEventListener("click", () => {
+  const responses = {};
+  document.querySelectorAll('.rating-btn.bg-blue-500').forEach(btn => {
+    const week = btn.getAttribute('data-week');
+    const value = parseInt(btn.getAttribute('data-value'));
+    responses[`week-${week}`] = value;
+  });
+
+  if (Object.keys(responses).length === 0) {
+    alert("Please rate at least one week.");
+    return;
+  }
+
+  const context = document.getElementById("contextInput")?.value.trim() || "";
+  const data = {
+    employee: "Sarah",
+    date: new Date().toISOString(),
+    responses,
+    context
+  };
+
+  fetch("https://flicker-fresh-beechnut.glitch.me/api/ratings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(res => res.ok ? alert("Ratings submitted!") : Promise.reject())
+  .catch(err => {
+    console.error("Error:", err);
+    alert("Submission failed.");
+  });
+});
 
         trackerCategories.forEach(category => {
           const id = category.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
