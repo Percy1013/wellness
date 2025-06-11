@@ -83,145 +83,165 @@
 </main>
 
 <script>
-  const API_BASE = "https://flicker-fresh-beechnut.glitch.me/api";
-
-  // Set today's date
-  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  });
-
-  // Load and display streak
   let streakCount = parseInt(localStorage.getItem('streak') || '12');
   function updateStreakDisplay() {
     document.getElementById("streakDisplay").innerHTML = `🔥 ${streakCount} day streak`;
   }
   updateStreakDisplay();
 
-  // Mood selection
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+
+  const moodButtons = document.querySelectorAll('.mood-button');
   let selectedMood = null;
-  document.querySelectorAll('.mood-button').forEach(button => {
+  moodButtons.forEach(button => {
     button.addEventListener('click', () => {
-      document.querySelectorAll('.mood-button').forEach(btn => btn.classList.remove('ring-2', 'bg-purple-100', 'scale-110'));
-      button.classList.add('ring-2', 'bg-purple-100', 'scale-110');
+      moodButtons.forEach(btn => btn.classList.remove('ring-2', 'ring-white', 'bg-purple-100', 'scale-110'));
+      button.classList.add('ring-2', 'ring-white', 'bg-purple-100', 'scale-110');
       selectedMood = button.getAttribute('data-mood');
     });
   });
 
-  // Submit check-in
   document.getElementById('submitCheckin').addEventListener('click', () => {
     const reflection = document.getElementById('reflectionText').value.trim();
-    if (!selectedMood) return alert("Select a mood.");
-    if (!reflection) return alert("Write a reflection.");
-
-    fetch(`${API_BASE}/checkins`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        employee: "Sarah",
-        mood: selectedMood,
-        reflection,
-        date: new Date().toISOString()
-      })
+    if (!selectedMood) return alert('Please select your mood.');
+    if (!reflection) return alert('Please write a reflection.');
+    const data = {
+      employee: 'Sarah',
+      mood: selectedMood,
+      reflection,
+      date: new Date().toISOString()
+    };
+    fetch('https://flicker-fresh-beechnut.glitch.me/api/checkins', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
     })
     .then(res => {
       if (res.ok) {
         streakCount++;
         localStorage.setItem('streak', streakCount);
         updateStreakDisplay();
+        alert('Check-in submitted!');
         document.getElementById('reflectionText').value = '';
         selectedMood = null;
-        alert("Check-in submitted.");
-      } else throw new Error();
+      } else {
+        throw new Error('Failed to save check-in');
+      }
     })
-    .catch(() => alert("Server error."));
+    .catch(err => {
+      console.error(err);
+      alert('Server error.');
+    });
   });
 
-  // Save journal entry
   document.getElementById("saveEntry").addEventListener("click", () => {
     const entryText = document.getElementById("journalEntry").value.trim();
     const shareWithHR = document.getElementById("shareHR").checked;
-    if (!entryText) return alert("Write something.");
-    if (!shareWithHR) return alert("Please tick 'Share with HR'.");
-
-    fetch(`${API_BASE}/journal`, {
+    if (!entryText) return alert("Please write something in your journal.");
+    if (!shareWithHR) return alert("Check 'Share with HR' if you want to submit.");
+    const journalData = {
+      employee: "Sarah",
+      date: new Date().toISOString(),
+      entry: entryText
+    };
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/journal", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        employee: "Sarah",
-        entry: entryText,
-        date: new Date().toISOString()
-      })
+      body: JSON.stringify(journalData)
     })
-    .then(res => {
-      if (res.ok) {
+    .then(response => {
+      if (response.ok) {
+        alert("Journal entry shared.");
         document.getElementById("journalEntry").value = "";
         document.getElementById("shareHR").checked = false;
-        alert("Journal submitted.");
-      } else throw new Error();
+      } else {
+        alert("Failed to save entry.");
+      }
     })
-    .catch(() => alert("Failed to save journal."));
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Server error.");
+    });
   });
 
-  // Load and render categories
-  window.onload = () => {
-    fetch(`${API_BASE}/categories`)
+  window.onload = function () {
+    fetch("https://flicker-fresh-beechnut.glitch.me/api/categories")
       .then(res => res.json())
-      .then(categories => {
-        const container = document.getElementById('tracker-categories');
-        container.innerHTML = "";
-        categories.forEach(cat => {
-          const id = cat.toLowerCase().replace(/\s+/g, '-');
-          container.innerHTML += `
-            <div>
-              <label class="font-medium">${cat}</label>
-              <div class="flex items-center mt-1 gap-3">
-                <div class="flex gap-1" id="${id}-buttons">
-                  ${[...Array(10)].map((_, i) => `<button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100" data-category="${cat}" data-value="${i+1}">${i+1}</button>`).join('')}
-                </div>
-                <span class="text-sm text-gray-600" id="${id}-score"></span>
+      .then(trackerCategories => {
+        const trackerContainer = document.getElementById('tracker-categories');
+        trackerContainer.innerHTML = "";
+
+        trackerCategories.forEach(category => {
+          const id = category.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+          const wrapper = document.createElement('div');
+          wrapper.innerHTML = `
+            <label class="font-medium">${category}</label>
+            <div class="flex items-center mt-1 gap-3">
+              <div class="flex gap-1" id="${id}-buttons">
+                ${[...Array(10)].map((_, i) => `
+                  <button class="px-2 py-1 rounded bg-gray-100 hover:bg-blue-100"
+                    data-category="${id}" data-value="${i + 1}">${i + 1}</button>`).join('')}
               </div>
+              <span class="text-sm text-gray-600" id="${id}-score"></span>
             </div>
           `;
+          trackerContainer.appendChild(wrapper);
         });
 
         document.querySelectorAll('button[data-category]').forEach(button => {
           button.addEventListener('click', (e) => {
-            const cat = e.target.getAttribute('data-category');
-            const id = cat.toLowerCase().replace(/\s+/g, '-');
-            const val = e.target.getAttribute('data-value');
-            document.querySelectorAll(`#${id}-buttons button`).forEach(b => b.classList.remove('bg-blue-500', 'text-white'));
+            const category = e.target.getAttribute('data-category');
+            const value = e.target.getAttribute('data-value');
+            document.querySelectorAll(`#${category}-buttons button`).forEach(btn => {
+              btn.classList.remove('bg-blue-500', 'text-white');
+              btn.classList.add('bg-gray-100');
+            });
+            e.target.classList.remove('bg-gray-100');
             e.target.classList.add('bg-blue-500', 'text-white');
-            document.getElementById(`${id}-score`).textContent = `${val}/10`;
+            document.getElementById(`${category}-score`).textContent = `${value}/10`;
           });
         });
       });
 
-    // Submit ratings
     document.getElementById("submitRatings").addEventListener("click", () => {
       const context = document.getElementById("contextInput").value.trim();
       const responses = {};
+
       document.querySelectorAll('button[data-category].bg-blue-500').forEach(btn => {
-        responses[btn.getAttribute('data-category')] = parseInt(btn.getAttribute('data-value'));
+        const category = btn.getAttribute('data-category');
+        const value = parseInt(btn.getAttribute('data-value'));
+        responses[category] = value;
       });
 
-      if (Object.keys(responses).length === 0) return alert("Rate at least one category.");
+      if (Object.keys(responses).length === 0) {
+        alert("Please rate at least one category.");
+        return;
+      }
 
-      fetch(`${API_BASE}/ratings`, {
+      const data = {
+        employee: "Sarah",
+        date: new Date().toISOString(),
+        responses,
+        context
+      };
+
+      fetch("https://flicker-fresh-beechnut.glitch.me/api/ratings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          employee: "Sarah",
-          date: new Date().toISOString(),
-          responses,
-          context
-        })
+        body: JSON.stringify(data)
       })
-      .then(res => res.ok ? alert("Ratings submitted!") : alert("Failed to submit ratings."))
-      .catch(() => alert("Error sending ratings."));
+      .then(res => res.json())
+      .then(() => alert("Ratings submitted!"))
+      .catch(err => {
+        console.error("Rating submit error:", err);
+        alert("Error submitting rating.");
+      });
     });
 
-    // Render chart
-    new Chart(document.getElementById('satisfactionChart').getContext('2d'), {
+    const ctx = document.getElementById('satisfactionChart').getContext('2d');
+    new Chart(ctx, {
       type: 'line',
       data: {
         labels: [...Array(12)].map((_, i) => `Week ${i + 1}`),
@@ -236,14 +256,19 @@
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             position: 'bottom',
-            labels: { usePointStyle: true }
+            labels: { usePointStyle: true, boxWidth: 10 }
           }
         },
         scales: {
-          y: { beginAtZero: true, max: 10, ticks: { stepSize: 1 } }
+          y: {
+            beginAtZero: true,
+            max: 10,
+            ticks: { stepSize: 1 }
+          }
         }
       }
     });
